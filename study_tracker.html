@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>دفتر مطالعه</title>
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:#f7f2e7;
+    background-image:repeating-linear-gradient(transparent, transparent 38px, #e4d9c2 39px);
+    color:#2b2621;
+    font-family:Tahoma, Arial, sans-serif;
+    min-height:100vh;
+    padding:16px;
+    padding-bottom:60px;
+  }
+  .wrap{max-width:520px;margin:0 auto;}
+  .masthead{text-align:center;padding:10px 0 18px;border-bottom:2px solid #7a2e2e;margin-bottom:16px;}
+  .masthead .title{font-size:22px;font-weight:700;color:#5c2222;letter-spacing:1px;}
+  .masthead .date{font-size:13px;color:#6b6255;margin-top:4px;}
+  .conn-badge{display:inline-block;font-size:11px;padding:3px 10px;border-radius:20px;margin-top:6px;}
+  .conn-on{background:#e3ecdf;color:#3f6b4a;}
+  .conn-off{background:#f6e3e3;color:#7a2e2e;}
+  .tabs{display:flex;gap:6px;margin-bottom:16px;}
+  .tab{flex:1;text-align:center;padding:9px 0;border:1px solid #e4d9c2;border-radius:8px;background:#fff8ec;color:#6b6255;font-size:13px;font-weight:600;cursor:pointer;}
+  .tab.active{background:#7a2e2e;color:#fdf6ea;border-color:#7a2e2e;}
+  .card{background:#fffaf0;border:1px solid #e4d9c2;border-radius:10px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(43,38,33,0.08);}
+  .card h3{margin:0 0 10px;font-size:15px;color:#5c2222;border-bottom:1px dashed #e4d9c2;padding-bottom:8px;}
+  .schedule-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:13.5px;border-bottom:1px solid #e4d9c2;}
+  .schedule-row:last-child{border-bottom:none;}
+  .schedule-row .time{color:#6b6255;font-size:12.5px;min-width:95px;}
+  .timer-display{text-align:center;font-size:44px;font-weight:700;letter-spacing:2px;color:#5c2222;font-variant-numeric:tabular-nums;margin:6px 0 10px;direction:ltr;}
+  .timer-display.overtime{color:#a97c2f;}
+  .timer-status{text-align:center;font-size:12.5px;color:#6b6255;margin-bottom:14px;min-height:16px;}
+  .btn-row{display:flex;gap:8px;}
+  .btn{flex:1;padding:12px 0;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;color:#fdf6ea;}
+  .btn-start{background:#3f6b4a;}
+  .btn-pause{background:#a97c2f;}
+  .btn-end{background:#7a2e2e;}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+  .parts-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .goal-adjust{display:flex;gap:6px;align-items:center;font-size:13px;color:#6b6255;}
+  .goal-adjust button{width:26px;height:26px;border-radius:6px;border:1px solid #e4d9c2;background:#fff;font-size:15px;cursor:pointer;color:#7a2e2e;}
+  .parts-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+  .part{aspect-ratio:1;border-radius:8px;border:1.5px solid #e4d9c2;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;color:#6b6255;background:#fff;cursor:pointer;user-select:none;text-align:center;padding:2px;}
+  .part.current{border-color:#a97c2f;box-shadow:0 0 0 2px rgba(169,124,47,.3);}
+  .legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;font-size:11px;color:#6b6255;}
+  .legend span{display:flex;align-items:center;gap:4px;}
+  .legend i{width:10px;height:10px;border-radius:3px;display:inline-block;}
+  .note-box{font-size:12px;color:#6b6255;background:#f1e8d5;border-radius:8px;padding:10px;margin-top:10px;line-height:1.8;}
+  .summary-line{display:flex;justify-content:space-between;font-size:14px;margin:6px 0;}
+  .summary-line b{color:#5c2222;}
+  .subj-list{margin-top:8px;}
+  .subj-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid #f1e8d5;}
+  .subj-row:last-child{border-bottom:none;}
+  .month-day{display:flex;justify-content:space-between;align-items:center;padding:9px 4px;border-bottom:1px solid #e4d9c2;font-size:13px;}
+  .month-day:last-child{border-bottom:none;}
+  .month-day .d{color:#6b6255;min-width:70px;}
+  .bar-wrap{flex:1;margin:0 10px;background:#efe6d2;border-radius:5px;height:9px;overflow:hidden;}
+  .bar{height:100%;background:#7a2e2e;border-radius:5px;}
+  .hrs{min-width:46px;text-align:left;font-weight:700;color:#5c2222;}
+  .totals{display:flex;justify-content:space-around;text-align:center;margin-bottom:6px;}
+  .totals .t{font-size:22px;font-weight:700;color:#5c2222;}
+  .totals .l{font-size:11px;color:#6b6255;margin-top:2px;}
+  .empty{text-align:center;color:#6b6255;font-size:13px;padding:20px 0;}
+  .sync-btn{width:100%;padding:12px 0;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;background:#2f5d8a;color:#fdf6ea;margin-top:10px;}
+  .sync-btn:disabled{opacity:.5;}
+  .sync-status{text-align:center;font-size:12px;color:#6b6255;margin-top:8px;min-height:16px;}
+  .hint{font-size:11.5px;color:#a97c2f;text-align:center;margin-top:6px;}
+  .save-status{text-align:center;font-size:11px;color:#6b6255;margin-top:6px;min-height:14px;}
+  .settings-row{margin-bottom:10px;}
+  .settings-row label{display:block;font-size:12.5px;color:#6b6255;margin-bottom:4px;}
+  .settings-row input{width:100%;padding:9px 10px;border:1px solid #e4d9c2;border-radius:6px;font-size:13px;background:#fffaf0;color:#2b2621;}
+  .overlay{position:fixed;inset:0;background:rgba(43,38,33,.55);display:none;align-items:flex-end;justify-content:center;z-index:50;}
+  .overlay.show{display:flex;}
+  .modal{background:#fffaf0;width:100%;max-width:520px;border-radius:16px 16px 0 0;padding:18px;}
+  .modal h4{margin:0 0 12px;font-size:15px;color:#5c2222;text-align:center;}
+  .subj-btn{width:100%;text-align:right;padding:12px 14px;margin-bottom:8px;border-radius:8px;border:1px solid #e4d9c2;background:#fff8ec;font-size:14px;color:#2b2621;cursor:pointer;display:flex;align-items:center;gap:10px;}
+  .subj-btn i{width:12px;height:12px;border-radius:3px;flex:none;}
+  .modal-cancel{width:100%;text-align:center;padding:10px 0;margin-top:4px;color:#7a2e2e;background:none;border:none;font-size:13px;cursor:pointer;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="masthead">
+    <div class="title" id="appTitle">دفتر مطالعه</div>
+    <div class="date" id="todayLabel">—</div>
+    <div><span class="conn-badge conn-on" id="connBadge">آنلاین</span></div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="today">امروز</div>
+    <div class="tab" data-tab="week">هفته</div>
+    <div class="tab" data-tab="month">ماه</div>
+    <div class="tab" data-tab="settings">تنظیمات</div>
+  </div>
+
+  <div id="todayView">
+    <div class="card">
+      <h3>برنامه ثابت روز</h3>
+      <div class="schedule-row"><span class="time">۰۶:۳۰</span><span>بیدار شدن</span></div>
+      <div class="schedule-row"><span class="time">۰۶:۳۰ - ۰۸:۰۰</span><span>پیاده‌روی یا ۱-۲ پارت مطالعه</span></div>
+      <div class="schedule-row"><span class="time">۰۸:۰۰ - ۰۹:۰۰</span><span>صبحانه</span></div>
+      <div class="schedule-row"><span class="time">۱۳:۳۰ - ۱۴:۳۰</span><span>ناهار</span></div>
+      <div class="schedule-row"><span class="time">۲۰:۰۰ - ۲۱:۰۰</span><span>شام</span></div>
+      <div class="schedule-row"><span class="time">۲۲:۰۰</span><span>خواب</span></div>
+    </div>
+
+    <div class="card">
+      <h3>تایمر مطالعه</h3>
+      <div class="timer-display" id="timerDisplay">۰۰:۰۰:۰۰</div>
+      <div class="timer-status" id="timerStatus">تایمر متوقف است — هر زمان بزنی «شروع»، از همون لحظه حساب می‌شه</div>
+      <div class="btn-row">
+        <button class="btn btn-start" id="btnStart">شروع</button>
+        <button class="btn btn-pause" id="btnPause" disabled>مکث</button>
+        <button class="btn btn-end" id="btnEnd" disabled>پایان</button>
+      </div>
+      <div class="save-status" id="saveStatus"></div>
+    </div>
+
+    <div class="card">
+      <h3>تایمر استراحت</h3>
+      <div class="timer-display" id="breakTimerDisplay">۰۰:۰۰:۰۰</div>
+      <div class="timer-status" id="breakTimerStatus">استراحت شروع نشده</div>
+      <div class="btn-row">
+        <button class="btn btn-start" id="btnBreakStart">شروع استراحت</button>
+        <button class="btn btn-end" id="btnBreakEnd" disabled>پایان استراحت</button>
+      </div>
+      <div class="summary-line" style="margin-top:10px;"><span>مجموع استراحت امروز</span><b id="breakTotalToday">۰ دقیقه</b></div>
+    </div>
+
+    <div class="card">
+      <div class="parts-head">
+        <h3 style="margin:0;border:none;padding:0;">پارت‌های ۳۰ دقیقه‌ای</h3>
+        <div class="goal-adjust">
+          <button id="minusPart">−</button>
+          <span id="goalLabel">۱۰ پارت</span>
+          <button id="plusPart">+</button>
+        </div>
+      </div>
+      <div class="parts-grid" id="partsGrid"></div>
+      <div class="legend" id="legend"></div>
+      <div class="note-box">روی هر مربع بزن تا درسی که توی اون ۳۰ دقیقه خوندی رو انتخاب کنی. اگه بعد از ۳۰ دقیقه دکمه مکث یا پایان رو نزنی، تایمر متوقف نمی‌شه و به‌صورت «بیش‌کاری» ادامه می‌ده تا خودت بزنی.</div>
+      <button class="sync-btn" id="addPastPart" style="background:#a97c2f;">افزودن یک پارت ۳۰ دقیقه‌ای که قبلاً خونده بودم و ثبت نشده</button>
+    </div>
+
+    <div class="card">
+      <h3>جمع‌بندی امروز</h3>
+      <div class="summary-line"><span>ساعت مطالعه‌شده</span><b id="sumHours">۰ ساعت و ۰ دقیقه</b></div>
+      <div class="summary-line"><span>پارت‌های ثبت‌شده</span><b id="sumParts">۰ از ۱۰</b></div>
+      <div class="summary-line"><span>وضعیت هدف روز</span><b id="sumStatus">شروع نشده</b></div>
+      <div class="subj-list" id="sumSubjects"></div>
+      <button class="sync-btn" id="syncDay">ثبت خلاصه امروز در Notion</button>
+      <div class="sync-status" id="syncDayStatus"></div>
+    </div>
+  </div>
+
+  <div id="weekView" style="display:none;">
+    <div class="card">
+      <h3>خلاصه این هفته (شنبه تا امروز)</h3>
+      <div class="totals">
+        <div><div class="t" id="wTotalHours">۰</div><div class="l">ساعت کل هفته</div></div>
+        <div><div class="t" id="wAvgHours">۰</div><div class="l">میانگین روزانه</div></div>
+        <div><div class="t" id="wDaysLogged">۰</div><div class="l">روز ثبت‌شده</div></div>
+      </div>
+      <div class="subj-list" id="wSubjects"></div>
+      <div class="hint" id="wHint" style="display:none;">امروز آخر هفته‌ست — وقت خوبیه خلاصه هفته رو بفرستی</div>
+      <button class="sync-btn" id="syncWeek">ثبت خلاصه این هفته در Notion</button>
+      <div class="sync-status" id="syncWeekStatus"></div>
+      <button class="sync-btn" id="aiAnalyzeWeek" style="background:#6b4f8a;margin-top:8px;">تحلیل هوشمند هفته (با Claude)</button>
+      <div class="sync-status" id="aiAnalyzeStatus"></div>
+      <div class="note-box" id="aiAnalyzeResult" style="display:none;"></div>
+    </div>
+    <div class="card">
+      <h3>روز به روز</h3>
+      <div id="weekList"><div class="empty">هنوز داده‌ای برای این هفته ثبت نشده</div></div>
+    </div>
+  </div>
+
+  <div id="monthView" style="display:none;">
+    <div class="card">
+      <h3>خلاصه ماه</h3>
+      <div class="totals">
+        <div><div class="t" id="mTotalHours">۰</div><div class="l">ساعت کل ماه</div></div>
+        <div><div class="t" id="mAvgHours">۰</div><div class="l">میانگین روزانه</div></div>
+        <div><div class="t" id="mDaysLogged">۰</div><div class="l">روز ثبت‌شده</div></div>
+      </div>
+      <div class="subj-list" id="mSubjects"></div>
+      <button class="sync-btn" id="syncMonth">ثبت خلاصه این ماه در Notion</button>
+      <div class="sync-status" id="syncMonthStatus"></div>
+    </div>
+    <div class="card">
+      <h3>روز به روز</h3>
+      <div id="monthList"><div class="empty">هنوز داده‌ای برای این ماه ثبت نشده</div></div>
+    </div>
+  </div>
+
+  <div id="settingsView" style="display:none;">
+    <div class="card">
+      <h3>نام نمایشی (اختیاری)</h3>
+      <div class="settings-row">
+        <label>این نام فقط روی خود گوشی ذخیره می‌شه و جایی ارسال نمی‌شه</label>
+        <input type="text" id="displayName" placeholder="مثلاً: دفتر مطالعه محسن">
+      </div>
+      <button class="sync-btn" id="saveDisplayName">ذخیره نام</button>
+    </div>
+
+    <div class="card">
+      <h3>درس‌ها</h3>
+      <div id="subjectsList"></div>
+      <div class="settings-row" style="margin-top:10px;">
+        <label>نام درس جدید (فارسی یا English)</label>
+        <input type="text" id="newSubjectName" placeholder="مثلاً: حقوق مدنی یا Contract Law">
+      </div>
+      <button class="sync-btn" id="addSubjectBtn">افزودن درس</button>
+      <div class="note-box">برای هر پارت مطالعه، از بین همین درس‌ها انتخاب می‌کنی. حذف یک درس، سابقه‌ی روزهای قبل رو پاک نمی‌کنه.</div>
+    </div>
+
+    <div class="card">
+      <h3>آلارم و تقویم گوشی</h3>
+      <div class="settings-row">
+        <label><input type="checkbox" id="alarmEndPart"> هنگام پایان هر پارت ۳۰ دقیقه‌ای، آلارم واقعی گوشی بزن</label>
+      </div>
+      <div class="settings-row">
+        <label><input type="checkbox" id="alarmOvertime"> در حالت بیش‌کاری، هر ۱۰ دقیقه یک‌بار یادآوری بزن</label>
+      </div>
+      <div class="settings-row">
+        <label><input type="checkbox" id="alarmBreakEnd"> هنگام پایان زمان استراحت، آلارم واقعی گوشی بزن</label>
+      </div>
+      <div class="settings-row">
+        <label>هدف مدت استراحت (دقیقه)</label>
+        <input type="number" id="breakGoalMinutes" min="1" value="10">
+      </div>
+      <div class="settings-row">
+        <label><input type="checkbox" id="calendarSync"> جلسات مطالعه رو خودکار به تقویم گوشی اضافه کن</label>
+      </div>
+      <button class="sync-btn" id="saveNotifSettings">ذخیره تنظیمات آلارم و تقویم</button>
+      <div class="sync-status" id="notifStatus"></div>
+      <div class="note-box">این تنظیمات فقط روی خود گوشی ذخیره می‌شن. برای فعال بودن واقعی آلارم و تقویم، اپ اندروید باید این قابلیت‌ها رو در بخش بومی (Bridge) پیاده‌سازی کرده باشه.</div>
+    </div>
+
+    <div class="card">
+      <h3>هوش مصنوعی برای تحلیل هفتگی (اختیاری)</h3>
+      <div class="settings-row">
+        <label>Anthropic API Key شخصی</label>
+        <input type="password" id="claudeApiKey" placeholder="sk-ant-...">
+      </div>
+      <button class="sync-btn" id="saveClaudeConfig">ذخیره کلید</button>
+      <div class="sync-status" id="claudeSettingsStatus"></div>
+      <div class="note-box">این کلید فقط روی خود گوشی ذخیره می‌شه. اگه واردش کنی، در بخش «هفته» یک دکمه‌ی «تحلیل هوشمند هفته» فعال می‌شه که خلاصه‌ی مطالعه‌ات رو برای گرفتن پیشنهاد به مدل Claude می‌فرسته. اگه خالی بذاری، این قابلیت غیرفعال می‌مونه و هیچ داده‌ای جایی ارسال نمی‌شه.</div>
+    </div>
+
+    <div class="card">
+      <h3>اتصال به Notion</h3>
+      <div class="settings-row">
+        <label>Notion Integration Token (سکرت)</label>
+        <input type="password" id="notionToken" placeholder="secret_xxx...">
+      </div>
+      <div class="settings-row">
+        <label>شناسه صفحه مادر (Parent Page ID)</label>
+        <input type="text" id="notionParentId" placeholder="32 کاراکتر بدون خط تیره یا با خط تیره">
+      </div>
+      <button class="sync-btn" id="saveNotionConfig">ذخیره تنظیمات Notion</button>
+      <div class="sync-status" id="settingsStatus"></div>
+      <div class="note-box">
+        این توکن فقط روی خود گوشی ذخیره می‌شه، جایی ارسال نمی‌شه مگر مستقیم به Notion. برای ساختنش:
+        ۱) برو notion.so/my-integrations و یک Integration جدید بساز و توکنش رو کپی کن.
+        ۲) یک صفحه در Notion بساز، از منوی «...» گزینه Connections را بزن و همون Integration رو وصل کن.
+        ۳) از URL همون صفحه، ۳۲ کاراکتر شناسه رو کپی کن و اینجا بذار.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h4>این پارت رو صرف کدوم درس کردی؟</h4>
+    <div id="subjButtons"></div>
+    <button class="modal-cancel" id="modalCancel">پاک کردن / لغو</button>
+  </div>
+</div>
+
+<script>
+// ===================================================================
+// لایه ذخیره‌سازی: به‌جای window.storage از پل بومی اندروید استفاده می‌شود
+// این یعنی همه‌چیز (تایمر، پارت‌ها، خلاصه‌ها) کاملاً آفلاین کار می‌کند.
+// فقط توابع syncToNotion به اینترنت نیاز واقعی دارند.
+// ===================================================================
+var Bridge = window.AndroidBridge; // در اندروید توسط addJavascriptInterface تزریق می‌شود
+
+async function storageGet(key){
+  try {
+    var raw = Bridge.getItem(key);
+    return raw ? { value: raw } : null;
+  } catch(e){ return null; }
+}
+async function storageSet(key, value){
+  try { return Bridge.setItem(key, value); } catch(e){ return false; }
+}
+async function storageList(prefix){
+  try {
+    var raw = Bridge.listKeys(prefix);
+    var arr = JSON.parse(raw);
+    return { keys: arr };
+  } catch(e){ return { keys: [] }; }
+}
+function realIsOnline(){
+  try { return !!Bridge.isOnline(); } catch(e){ return true; }
+}
+
+var SUBJECTS = []; // بدون درس پیش‌فرض؛ هر کاربر درس‌های خودش را در تنظیمات وارد می‌کند
+var SUBJ_PALETTE = ['#7a2e2e','#a97c2f','#3f6b4a','#2f5d8a','#6b4f8a','#8a4f2f','#4f4f4f','#2f7a6b','#7a4f2f','#4f2f7a'];
+function subjByFull(full){ return SUBJECTS.find(function(s){return s.full===full;}); }
+function shortKeyFor(name){
+  var trimmed = name.trim();
+  return trimmed.length<=6 ? trimmed : trimmed.slice(0,5)+'…';
+}
+async function loadSubjects(){
+  try {
+    var r = await storageGet('subjects');
+    SUBJECTS = (r && r.value) ? JSON.parse(r.value) : [];
+  } catch(e){ SUBJECTS = []; }
+}
+async function saveSubjects(){ await storageSet('subjects', JSON.stringify(SUBJECTS)); }
+function renderSubjectsSettingsList(){
+  var box = document.getElementById('subjectsList');
+  if (!box) return;
+  box.innerHTML = '';
+  if (SUBJECTS.length===0){
+    box.innerHTML = '<div class="empty" style="padding:8px 0;">هنوز درسی اضافه نکردی</div>';
+    return;
+  }
+  SUBJECTS.forEach(function(s, idx){
+    var row = document.createElement('div');
+    row.className = 'subj-row';
+    row.innerHTML = '<span style="display:flex;align-items:center;gap:8px;"><i style="width:12px;height:12px;border-radius:3px;display:inline-block;background:'+s.color+'"></i>'+s.full+'</span>';
+    var delBtn = document.createElement('button');
+    delBtn.textContent = 'حذف';
+    delBtn.style.cssText = 'border:none;background:none;color:#7a2e2e;font-size:12px;cursor:pointer;';
+    delBtn.onclick = async function(){
+      SUBJECTS.splice(idx,1);
+      await saveSubjects();
+      renderSubjectsSettingsList();
+      renderLegend();
+    };
+    row.appendChild(delBtn);
+    box.appendChild(row);
+  });
+}
+document.getElementById('addSubjectBtn').onclick = async function(){
+  var input = document.getElementById('newSubjectName');
+  var name = input.value.trim();
+  if (!name) return;
+  var color = SUBJ_PALETTE[SUBJECTS.length % SUBJ_PALETTE.length];
+  SUBJECTS.push({key: shortKeyFor(name), full: name, color: color});
+  await saveSubjects();
+  input.value = '';
+  renderSubjectsSettingsList();
+  renderLegend();
+};
+
+function toJalali(gy, gm, gd) {
+  var g_d_m = [0,31,59,90,120,151,181,212,243,273,304,334];
+  var jy = (gy <= 1600) ? 0 : 979;
+  gy -= (gy <= 1600) ? 621 : 1600;
+  var gy2 = (gm > 2) ? (gy + 1) : gy;
+  var days = (365*gy) + (parseInt((gy2+3)/4)) - (parseInt((gy2+99)/100)) + (parseInt((gy2+399)/400)) - 80 + gd + g_d_m[gm-1];
+  jy += 33*parseInt(days/12053);
+  days %= 12053;
+  jy += 4*parseInt(days/1461);
+  days %= 1461;
+  if (days > 365) { jy += parseInt((days-1)/365); days = (days-1)%365; }
+  var jm = (days < 186) ? 1+parseInt(days/31) : 7+parseInt((days-186)/30);
+  var jd = 1 + ((days < 186) ? (days%31) : ((days-186)%30));
+  return [jy, jm, jd];
+}
+var jMonths = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+var weekDaysFa = ['یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه'];
+
+function faDigits(n){
+  var map = {'0':'۰','1':'۱','2':'۲','3':'۳','4':'۴','5':'۵','6':'۶','7':'۷','8':'۸','9':'۹'};
+  return String(n).replace(/[0-9]/g, function(d){return map[d];});
+}
+function pad(n){ return n<10 ? '0'+n : ''+n; }
+
+var now = new Date();
+var jToday = toJalali(now.getFullYear(), now.getMonth()+1, now.getDate());
+var todayKey = 'day:' + now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
+var monthPrefix = 'day:' + now.getFullYear()+'-'+pad(now.getMonth()+1)+'-';
+
+document.getElementById('todayLabel').textContent =
+  weekDaysFa[now.getDay()] + '، ' + faDigits(jToday[2]) + ' ' + jMonths[jToday[1]-1] + ' ' + faDigits(jToday[0]);
+
+var state = {
+  goalParts: 10,
+  partsSubject: [],
+  totalSeconds: 0,
+  running: false,
+  paused: false,
+  sessionStart: null,
+  accumulatedBeforePause: 0,
+  breakSeconds: 0,
+  breakRunning: false,
+  breakSessionStart: null
+};
+for (var i=0;i<state.goalParts;i++) state.partsSubject.push(null);
+
+var notifSettings = {};
+var breakTickInterval = null;
+var tickInterval = null;
+var pendingModalIdx = null;
+var autosaveCounter = 0;
+var modalMode = 'part';
+
+// ---------- نشانگر اتصال واقعی (بر پایه ConnectivityManager اندروید) ----------
+function setConnBadge(isOnline){
+  var b = document.getElementById('connBadge');
+  if (isOnline){ b.textContent='آنلاین'; b.className='conn-badge conn-on'; }
+  else { b.textContent='آفلاین — فقط ارسال به Notion غیرفعاله'; b.className='conn-badge conn-off'; }
+}
+function refreshConnBadge(){ setConnBadge(realIsOnline()); }
+refreshConnBadge();
+setInterval(refreshConnBadge, 8000);
+
+function fmtTime(totalSec){
+  totalSec = Math.max(0, Math.floor(totalSec));
+  var h = Math.floor(totalSec/3600), m = Math.floor((totalSec%3600)/60), s = totalSec%60;
+  return pad(h)+':'+pad(m)+':'+pad(s);
+}
+function fmtMMSS(totalSec){
+  totalSec = Math.max(0, Math.floor(totalSec));
+  var m = Math.floor(totalSec/60), s = totalSec%60;
+  return pad(m)+':'+pad(s);
+}
+
+// ---------- ذخیره‌سازی (همیشه محلی و فوری، بدون نیاز به اینترنت) ----------
+async function persistState(){
+  var statusEl = document.getElementById('saveStatus');
+  var liveObj = null;
+  if (state.running) {
+    liveObj = {
+      running: true,
+      paused: state.paused,
+      sessionStartISO: (!state.paused && state.sessionStart) ? new Date(state.sessionStart).toISOString() : null,
+      accumulatedBeforePause: state.accumulatedBeforePause
+    };
+  }
+  var breakLiveObj = null;
+  if (state.breakRunning) {
+    breakLiveObj = { running: true, sessionStartISO: new Date(state.breakSessionStart).toISOString() };
+  }
+  var payload = {
+    goalParts: state.goalParts,
+    partsSubject: state.partsSubject,
+    totalSeconds: state.totalSeconds,
+    breakSeconds: state.breakSeconds,
+    breakLive: breakLiveObj,
+    live: liveObj,
+    updatedAt: new Date().toISOString()
+  };
+  var ok = await storageSet(todayKey, JSON.stringify(payload));
+  if (statusEl) statusEl.textContent = ok ? '' : 'خطا در ذخیره‌سازی محلی';
+  return ok;
+}
+
+document.addEventListener('visibilitychange', function(){
+  if (document.visibilityState === 'hidden') persistState();
+});
+window.addEventListener('beforeunload', function(){ persistState(); });
+
+async function loadToday(){
+  await loadSubjects();
+  renderSubjectsSettingsList();
+
+  try {
+    var nameRes = await storageGet('displayName');
+    if (nameRes && nameRes.value) {
+      document.getElementById('appTitle').textContent = nameRes.value;
+      document.getElementById('displayName').value = nameRes.value;
+    }
+  } catch(e){}
+
+  try {
+    var notifRes = await storageGet('notifSettings');
+    var notif = (notifRes && notifRes.value) ? JSON.parse(notifRes.value) : {};
+    document.getElementById('alarmEndPart').checked = !!notif.alarmEndPart;
+    document.getElementById('alarmOvertime').checked = !!notif.alarmOvertime;
+    document.getElementById('alarmBreakEnd').checked = !!notif.alarmBreakEnd;
+    document.getElementById('calendarSync').checked = !!notif.calendarSync;
+    document.getElementById('breakGoalMinutes').value = notif.breakGoalMinutes || 10;
+    notifSettings = notif;
+  } catch(e){}
+
+  try {
+    var res = await storageGet(todayKey);
+    if (res && res.value) {
+      var saved = JSON.parse(res.value);
+      state.goalParts = saved.goalParts || 10;
+      state.partsSubject = saved.partsSubject || new Array(state.goalParts).fill(null);
+      state.totalSeconds = saved.totalSeconds || 0;
+      state.breakSeconds = saved.breakSeconds || 0;
+      if (saved.live && saved.live.running){
+        state.running = true;
+        state.paused = saved.live.paused;
+        state.accumulatedBeforePause = saved.live.accumulatedBeforePause || 0;
+        document.getElementById('btnStart').disabled = true;
+        document.getElementById('btnPause').disabled = false;
+        document.getElementById('btnEnd').disabled = false;
+        if (state.paused){
+          document.getElementById('btnPause').textContent = 'ادامه';
+          document.getElementById('timerStatus').textContent = 'مکث — بزن «ادامه» تا دوباره شمارش بشه (وضعیت قبلی بازیابی شد)';
+          document.getElementById('timerDisplay').textContent = fmtTime(state.accumulatedBeforePause);
+        } else {
+          state.sessionStart = saved.live.sessionStartISO ? new Date(saved.live.sessionStartISO).getTime() : Date.now();
+          tickInterval = setInterval(updateTimerDisplay, 1000);
+        }
+      }
+      if (saved.breakLive && saved.breakLive.running){
+        state.breakRunning = true;
+        state.breakSessionStart = saved.breakLive.sessionStartISO ? new Date(saved.breakLive.sessionStartISO).getTime() : Date.now();
+        document.getElementById('btnBreakStart').disabled = true;
+        document.getElementById('btnBreakEnd').disabled = false;
+        breakTickInterval = setInterval(updateBreakDisplay, 1000);
+      }
+    }
+  } catch(e) {}
+  renderParts();
+  renderSummary();
+  updateBreakTotalToday();
+  if (state.running && !state.paused) updateTimerDisplay();
+  if (state.breakRunning) updateBreakDisplay();
+
+  // بارگذاری تنظیمات Notion ذخیره‌شده
+  try {
+    var cfgRaw = Bridge.getNotionConfig();
+    var cfg = JSON.parse(cfgRaw);
+    document.getElementById('notionToken').value = cfg.token || '';
+    document.getElementById('notionParentId').value = cfg.parentPageId || '';
+  } catch(e){}
+}
+
+function currentSessionSeconds(){
+  if (!state.running) return 0;
+  if (state.paused) return state.accumulatedBeforePause;
+  var elapsed = Math.floor((Date.now() - state.sessionStart)/1000);
+  return state.accumulatedBeforePause + elapsed;
+}
+
+function updateTimerDisplay(){
+  var sessionSec = currentSessionSeconds();
+  var dispEl = document.getElementById('timerDisplay');
+  var statusEl = document.getElementById('timerStatus');
+  dispEl.textContent = fmtTime(sessionSec);
+  if (sessionSec < 1800){
+    dispEl.classList.remove('overtime');
+    statusEl.textContent = 'پارت جاری: ' + fmtMMSS(sessionSec) + ' از ۳۰:۰۰';
+    statusEl.style.color = '#6b6255';
+  } else {
+    dispEl.classList.add('overtime');
+    var overtime = sessionSec - 1800*Math.floor(sessionSec/1800);
+    statusEl.textContent = 'این پارت از ۳۰ دقیقه گذشت — بیش‌کاری: +' + fmtMMSS(overtime) + ' (بزن مکث یا پایان)';
+    statusEl.style.color = '#a97c2f';
+  }
+  var live = state.totalSeconds + sessionSec;
+  var completedParts = Math.floor(live/1800);
+  renderParts(Math.min(completedParts, state.goalParts-1), completedParts);
+  renderSummary(live);
+
+  autosaveCounter++;
+  if (autosaveCounter % 15 === 0) persistState();
+}
+
+// ---------- کمک‌توابع آلارم و تقویم بومی (اختیاری؛ اگر Bridge پیاده‌سازی نکرده باشد، بی‌خطر نادیده گرفته می‌شود) ----------
+function scheduleBridgeAlarm(code, delayMs, title, msg){
+  try { Bridge.scheduleAlarm(code, Date.now()+delayMs, title, msg); } catch(e){}
+}
+function cancelBridgeAlarm(code){ try { Bridge.cancelAlarm(code); } catch(e){} }
+function cancelStudyAlarms(){
+  cancelBridgeAlarm(201);
+  for (var i=1;i<=4;i++) cancelBridgeAlarm(210+i);
+}
+function scheduleStudyAlarms(){
+  if (notifSettings.alarmEndPart){
+    scheduleBridgeAlarm(201, 30*60*1000, 'پارت تمام شد', '۳۰ دقیقه مطالعه تموم شد — دکمه پایان یا مکث رو بزن.');
+  }
+  if (notifSettings.alarmOvertime){
+    for (var i=1;i<=4;i++){
+      scheduleBridgeAlarm(210+i, (30+10*i)*60*1000, 'بیش‌کاری ادامه داره', 'همچنان در حال مطالعه‌ای؛ یادت نره پارت رو ثبت کنی.');
+    }
+  }
+  if (notifSettings.calendarSync){
+    try { Bridge.addCalendarEvent('جلسه مطالعه', Date.now(), Date.now()+30*60*1000, 'ثبت‌شده خودکار از دفتر مطالعه'); } catch(e){}
+  }
+}
+
+document.getElementById('btnStart').onclick = function(){
+  state.running = true; state.paused = false;
+  state.sessionStart = Date.now(); state.accumulatedBeforePause = 0;
+  document.getElementById('btnStart').disabled = true;
+  document.getElementById('btnPause').disabled = false;
+  document.getElementById('btnPause').textContent = 'مکث';
+  document.getElementById('btnEnd').disabled = false;
+  document.getElementById('timerStatus').textContent = 'در حال مطالعه — از همین لحظه شمارش شروع شد';
+  tickInterval = setInterval(updateTimerDisplay, 1000);
+  scheduleStudyAlarms();
+  persistState();
+};
+document.getElementById('btnPause').onclick = function(){
+  if (!state.paused){
+    state.accumulatedBeforePause += Math.floor((Date.now()-state.sessionStart)/1000);
+    state.paused = true;
+    document.getElementById('btnPause').textContent = 'ادامه';
+    document.getElementById('timerStatus').textContent = 'مکث — بزن «ادامه» تا دوباره شمارش بشه';
+    cancelStudyAlarms();
+  } else {
+    state.sessionStart = Date.now(); state.paused = false;
+    document.getElementById('btnPause').textContent = 'مکث';
+    document.getElementById('timerStatus').textContent = 'در حال مطالعه...';
+    scheduleStudyAlarms();
+  }
+  persistState();
+};
+document.getElementById('btnEnd').onclick = async function(){
+  var sessionSec = currentSessionSeconds();
+  state.totalSeconds += sessionSec;
+  state.running = false; state.paused = false;
+  clearInterval(tickInterval);
+  cancelStudyAlarms();
+  document.getElementById('btnStart').disabled = false;
+  document.getElementById('btnPause').disabled = true;
+  document.getElementById('btnPause').textContent = 'مکث';
+  document.getElementById('btnEnd').disabled = true;
+  document.getElementById('timerDisplay').classList.remove('overtime');
+  document.getElementById('timerDisplay').textContent = '۰۰:۰۰:۰۰';
+  document.getElementById('timerStatus').textContent = 'تایمر متوقف است — هر زمان بزنی «شروع»، از همون لحظه حساب می‌شه';
+  renderParts(); renderSummary(state.totalSeconds);
+  await persistState();
+};
+
+// ---------- تایمر استراحت ----------
+function currentBreakSessionSeconds(){
+  if (!state.breakRunning) return 0;
+  return Math.floor((Date.now()-state.breakSessionStart)/1000);
+}
+function updateBreakDisplay(){
+  var sec = currentBreakSessionSeconds();
+  document.getElementById('breakTimerDisplay').textContent = fmtTime(sec);
+  var goalMin = parseInt(document.getElementById('breakGoalMinutes').value,10) || 10;
+  var statusEl = document.getElementById('breakTimerStatus');
+  if (sec < goalMin*60){
+    statusEl.textContent = 'در حال استراحت: ' + fmtMMSS(sec) + ' از ' + faDigits(goalMin) + ':۰۰';
+  } else {
+    statusEl.textContent = 'زمان استراحت تموم شد — وقتشه برگردی به مطالعه';
+  }
+}
+function updateBreakTotalToday(){
+  var total = state.breakSeconds + currentBreakSessionSeconds();
+  var m = Math.round(total/60);
+  document.getElementById('breakTotalToday').textContent = faDigits(m) + ' دقیقه';
+}
+document.getElementById('btnBreakStart').onclick = function(){
+  if (state.running && !state.paused){
+    document.getElementById('breakTimerStatus').textContent = 'اول تایمر مطالعه رو مکث یا پایان بده، بعد استراحت رو شروع کن';
+    return;
+  }
+  state.breakRunning = true;
+  state.breakSessionStart = Date.now();
+  document.getElementById('btnBreakStart').disabled = true;
+  document.getElementById('btnBreakEnd').disabled = false;
+  breakTickInterval = setInterval(function(){ updateBreakDisplay(); updateBreakTotalToday(); }, 1000);
+  var goalMin = parseInt(document.getElementById('breakGoalMinutes').value,10) || 10;
+  if (notifSettings.alarmBreakEnd){
+    scheduleBridgeAlarm(301, goalMin*60*1000, 'پایان استراحت', 'زمان استراحت تموم شد — وقت برگشتن به مطالعه‌ست.');
+  }
+  persistState();
+};
+document.getElementById('btnBreakEnd').onclick = async function(){
+  var sec = currentBreakSessionSeconds();
+  state.breakSeconds += sec;
+  state.breakRunning = false;
+  clearInterval(breakTickInterval);
+  document.getElementById('btnBreakStart').disabled = false;
+  document.getElementById('btnBreakEnd').disabled = true;
+  document.getElementById('breakTimerDisplay').textContent = '۰۰:۰۰:۰۰';
+  document.getElementById('breakTimerStatus').textContent = 'استراحت شروع نشده';
+  cancelBridgeAlarm(301);
+  updateBreakTotalToday();
+  await persistState();
+};
+
+function renderParts(currentIdx, completedCount){
+  var grid = document.getElementById('partsGrid');
+  grid.innerHTML = '';
+  for (var i=0;i<state.goalParts;i++){
+    (function(idx){
+      var subjFull = state.partsSubject[idx];
+      var subj = subjFull ? subjByFull(subjFull) : null;
+      var el = document.createElement('div');
+      el.className = 'part' + (idx===currentIdx ? ' current' : '');
+      if (subj){
+        el.style.background = subj.color; el.style.color = '#fff'; el.style.borderColor = subj.color;
+        el.textContent = subj.key;
+      } else if (completedCount !== undefined && idx < completedCount) {
+        el.style.background = '#fff8ec'; el.style.color = '#a97c2f'; el.style.borderStyle='dashed';
+        el.textContent = faDigits(idx+1) + '؟';
+      } else {
+        el.textContent = faDigits(idx+1);
+      }
+      el.onclick = function(){ openSubjectModal(idx); };
+      grid.appendChild(el);
+    })(i);
+  }
+  document.getElementById('goalLabel').textContent = faDigits(state.goalParts) + ' پارت';
+  renderLegend();
+}
+function renderLegend(){
+  var l = document.getElementById('legend');
+  l.innerHTML = '';
+  SUBJECTS.forEach(function(s){
+    var span = document.createElement('span');
+    span.innerHTML = '<i style="background:'+s.color+'"></i>'+s.full;
+    l.appendChild(span);
+  });
+}
+function openSubjectModal(idx){
+  modalMode = 'part';
+  pendingModalIdx = idx;
+  var box = document.getElementById('subjButtons');
+  box.innerHTML = '';
+  if (SUBJECTS.length===0){
+    box.innerHTML = '<div class="empty">اول از تب «تنظیمات» یکی‌دو درس اضافه کن</div>';
+    document.getElementById('overlay').classList.add('show');
+    return;
+  }
+  SUBJECTS.forEach(function(s){
+    var b = document.createElement('button');
+    b.className = 'subj-btn';
+    b.innerHTML = '<i style="background:'+s.color+'"></i>'+s.full;
+    b.onclick = async function(){
+      state.partsSubject[pendingModalIdx] = s.full;
+      closeModal();
+      renderParts(); renderSummary();
+      await persistState();
+    };
+    box.appendChild(b);
+  });
+  document.getElementById('overlay').classList.add('show');
+}
+function openAddPastPartModal(){
+  modalMode = 'add';
+  var box = document.getElementById('subjButtons');
+  box.innerHTML = '';
+  if (SUBJECTS.length===0){
+    box.innerHTML = '<div class="empty">اول از تب «تنظیمات» یکی‌دو درس اضافه کن</div>';
+    document.getElementById('overlay').classList.add('show');
+    return;
+  }
+  SUBJECTS.forEach(function(s){
+    var b = document.createElement('button');
+    b.className = 'subj-btn';
+    b.innerHTML = '<i style="background:'+s.color+'"></i>'+s.full;
+    b.onclick = async function(){
+      state.partsSubject.push(s.full);
+      state.goalParts = state.partsSubject.length;
+      state.totalSeconds += 1800;
+      closeModal();
+      renderParts(); renderSummary();
+      await persistState();
+    };
+    box.appendChild(b);
+  });
+  document.getElementById('overlay').classList.add('show');
+}
+document.getElementById('addPastPart').onclick = function(){ openAddPastPartModal(); };
+function closeModal(){ document.getElementById('overlay').classList.remove('show'); pendingModalIdx = null; }
+document.getElementById('modalCancel').onclick = async function(){
+  if (modalMode === 'part' && pendingModalIdx !== null) state.partsSubject[pendingModalIdx] = null;
+  closeModal();
+  renderParts(); renderSummary();
+  await persistState();
+};
+document.getElementById('overlay').onclick = function(e){ if (e.target.id==='overlay') closeModal(); };
+
+document.getElementById('plusPart').onclick = async function(){
+  state.goalParts++; state.partsSubject.push(null);
+  renderParts(); renderSummary(); await persistState();
+};
+document.getElementById('minusPart').onclick = async function(){
+  if (state.goalParts <= 1) return;
+  state.goalParts--; state.partsSubject.pop();
+  renderParts(); renderSummary(); await persistState();
+};
+
+function renderSummary(liveTotalSeconds){
+  var total = liveTotalSeconds !== undefined ? liveTotalSeconds : (state.totalSeconds + currentSessionSeconds());
+  var h = Math.floor(total/3600), m = Math.floor((total%3600)/60);
+  document.getElementById('sumHours').textContent = faDigits(h) + ' ساعت و ' + faDigits(m) + ' دقیقه';
+  var doneCount = state.partsSubject.filter(function(x){return x!==null;}).length;
+  document.getElementById('sumParts').textContent = faDigits(doneCount) + ' از ' + faDigits(state.goalParts);
+  var statusEl = document.getElementById('sumStatus');
+  if (doneCount === 0) { statusEl.textContent = 'شروع نشده'; statusEl.style.color = '#6b6255'; }
+  else if (doneCount < state.goalParts) { statusEl.textContent = 'در حال انجام'; statusEl.style.color = '#a97c2f'; }
+  else { statusEl.textContent = 'هدف روز کامل شد ✓'; statusEl.style.color = '#3f6b4a'; }
+
+  var subjMinutes = {};
+  state.partsSubject.forEach(function(f){ if (f) subjMinutes[f] = (subjMinutes[f]||0)+30; });
+  var box = document.getElementById('sumSubjects');
+  box.innerHTML = '';
+  Object.keys(subjMinutes).forEach(function(f){
+    var row = document.createElement('div');
+    row.className = 'subj-row';
+    row.innerHTML = '<span>'+f+'</span><b>'+faDigits(Math.floor(subjMinutes[f]/60))+' س '+faDigits(subjMinutes[f]%60)+' د</b>';
+    box.appendChild(row);
+  });
+}
+
+async function getAllDayRecords(){
+  var res = await storageList('day:');
+  var keys = (res && res.keys) ? res.keys : [];
+  var records = [];
+  for (var i=0;i<keys.length;i++){
+    var r = await storageGet(keys[i]);
+    if (r && r.value) {
+      try { records.push({key: keys[i], data: JSON.parse(r.value)}); } catch(e){}
+    }
+  }
+  return records;
+}
+function keyToDate(key){
+  var p = key.replace('day:','').split('-');
+  return new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2]));
+}
+function aggregate(records){
+  var totalSec = 0, subjMin = {};
+  records.forEach(function(rec){
+    totalSec += (rec.data.totalSeconds||0);
+    (rec.data.partsSubject||[]).forEach(function(f){ if (f) subjMin[f] = (subjMin[f]||0)+30; });
+  });
+  return {totalSec: totalSec, subjMin: subjMin};
+}
+function renderSubjBox(elId, subjMin){
+  var box = document.getElementById(elId);
+  box.innerHTML = '';
+  var keys = Object.keys(subjMin);
+  if (keys.length===0){ box.innerHTML = '<div class="empty" style="padding:8px 0;">هنوز درسی ثبت نشده</div>'; return; }
+  keys.sort(function(a,b){ return subjMin[b]-subjMin[a]; });
+  keys.forEach(function(f){
+    var row = document.createElement('div');
+    row.className = 'subj-row';
+    row.innerHTML = '<span>'+f+'</span><b>'+faDigits(Math.floor(subjMin[f]/60))+' س '+faDigits(subjMin[f]%60)+' د</b>';
+    box.appendChild(row);
+  });
+}
+
+function getWeekStart(){
+  var d = new Date(now);
+  var day = d.getDay();
+  var diff = (day - 6 + 7) % 7;
+  var start = new Date(d);
+  start.setDate(d.getDate()-diff);
+  start.setHours(0,0,0,0);
+  return start;
+}
+async function renderWeek(){
+  var weekStart = getWeekStart();
+  var all = await getAllDayRecords();
+  var weekRecs = all.filter(function(r){
+    var dt = keyToDate(r.key);
+    return dt >= weekStart && dt <= now;
+  });
+  weekRecs.sort(function(a,b){ return a.key.localeCompare(b.key); });
+
+  var agg = aggregate(weekRecs);
+  document.getElementById('wTotalHours').textContent = faDigits((agg.totalSec/3600).toFixed(1));
+  document.getElementById('wDaysLogged').textContent = faDigits(weekRecs.length);
+  document.getElementById('wAvgHours').textContent = weekRecs.length ? faDigits((agg.totalSec/3600/weekRecs.length).toFixed(1)) : '۰';
+  renderSubjBox('wSubjects', agg.subjMin);
+  document.getElementById('wHint').style.display = (now.getDay()===5) ? 'block' : 'none';
+
+  var listEl = document.getElementById('weekList');
+  if (weekRecs.length===0){ listEl.innerHTML = '<div class="empty">هنوز داده‌ای برای این هفته ثبت نشده</div>'; return; }
+  listEl.innerHTML = '';
+  weekRecs.forEach(function(r){
+    var dt = keyToDate(r.key);
+    var g = toJalali(dt.getFullYear(), dt.getMonth()+1, dt.getDate());
+    var doneCount = (r.data.partsSubject||[]).filter(function(x){return x!==null;}).length;
+    var pct = r.data.goalParts ? Math.round((doneCount/r.data.goalParts)*100) : 0;
+    var div = document.createElement('div');
+    div.className = 'month-day';
+    div.innerHTML = '<span class="d">'+weekDaysFa[dt.getDay()]+' '+faDigits(g[2])+' '+jMonths[g[1]-1]+'</span>'+
+      '<div class="bar-wrap"><div class="bar" style="width:'+pct+'%"></div></div>'+
+      '<span class="hrs">'+faDigits(((r.data.totalSeconds||0)/3600).toFixed(1))+' س</span>';
+    listEl.appendChild(div);
+  });
+}
+
+async function renderMonth(){
+  var all = await getAllDayRecords();
+  var monthRecs = all.filter(function(r){ return r.key.indexOf(monthPrefix)===0; });
+  monthRecs.sort(function(a,b){ return a.key.localeCompare(b.key); });
+
+  if (monthRecs.length===0){
+    document.getElementById('monthList').innerHTML = '<div class="empty">هنوز داده‌ای برای این ماه ثبت نشده</div>';
+    document.getElementById('mTotalHours').textContent='۰'; document.getElementById('mAvgHours').textContent='۰'; document.getElementById('mDaysLogged').textContent='۰';
+    renderSubjBox('mSubjects', {});
+    return;
+  }
+  var agg = aggregate(monthRecs);
+  document.getElementById('mTotalHours').textContent = faDigits((agg.totalSec/3600).toFixed(1));
+  document.getElementById('mAvgHours').textContent = faDigits((agg.totalSec/3600/monthRecs.length).toFixed(1));
+  document.getElementById('mDaysLogged').textContent = faDigits(monthRecs.length);
+  renderSubjBox('mSubjects', agg.subjMin);
+
+  var listEl = document.getElementById('monthList');
+  listEl.innerHTML = '';
+  monthRecs.forEach(function(r){
+    var dt = keyToDate(r.key);
+    var g = toJalali(dt.getFullYear(), dt.getMonth()+1, dt.getDate());
+    var doneCount = (r.data.partsSubject||[]).filter(function(x){return x!==null;}).length;
+    var pct = r.data.goalParts ? Math.round((doneCount/r.data.goalParts)*100) : 0;
+    var div = document.createElement('div');
+    div.className = 'month-day';
+    div.innerHTML = '<span class="d">'+faDigits(g[2])+' '+jMonths[g[1]-1]+'</span>'+
+      '<div class="bar-wrap"><div class="bar" style="width:'+pct+'%"></div></div>'+
+      '<span class="hrs">'+faDigits(((r.data.totalSeconds||0)/3600).toFixed(1))+' س</span>';
+    listEl.appendChild(div);
+  });
+}
+
+// ---------- ارسال به Notion (مستقیم از طریق اپ اندروید؛ تنها بخشی که واقعاً اینترنت لازم دارد) ----------
+var notionCallbacks = {};
+window.onNotionSyncResult = function(callId, success, message){
+  var cb = notionCallbacks[callId];
+  if (cb) { cb(success, message); delete notionCallbacks[callId]; }
+};
+function callNotionSync(title, bodyText){
+  return new Promise(function(resolve){
+    var callId = 'c' + Date.now() + Math.random().toString(36).slice(2);
+    notionCallbacks[callId] = function(success, message){ resolve({success: success, message: message}); };
+    try { Bridge.syncToNotion(title, bodyText, callId); }
+    catch(e){ resolve({success:false, message:'پل اندروید در دسترس نیست'}); }
+  });
+}
+function subjMinToText(subjMin){
+  var keys = Object.keys(subjMin);
+  if (keys.length===0) return 'هیچ درسی ثبت نشده';
+  return keys.map(function(f){
+    var h = Math.floor(subjMin[f]/60), m = subjMin[f]%60;
+    return '- ' + f + ': ' + h + ' ساعت و ' + m + ' دقیقه';
+  }).join('\n');
+}
+
+document.getElementById('syncDay').onclick = async function(){
+  var btn = this, statusEl = document.getElementById('syncDayStatus');
+  btn.disabled = true; statusEl.textContent = 'در حال ارسال به Notion...';
+  var subjMin = {};
+  state.partsSubject.forEach(function(f){ if (f) subjMin[f]=(subjMin[f]||0)+30; });
+  var h = Math.floor(state.totalSeconds/3600), m = Math.floor((state.totalSeconds%3600)/60);
+  var dateLabel = weekDaysFa[now.getDay()]+' '+faDigits(jToday[2])+' '+jMonths[jToday[1]-1]+' '+faDigits(jToday[0]);
+  var title = 'خلاصه مطالعه روزانه - ' + dateLabel;
+  var body = 'مجموع ساعت مطالعه: ' + h + ' ساعت و ' + m + ' دقیقه\n' +
+    'پارت‌های تکمیل‌شده: ' + state.partsSubject.filter(function(x){return x!==null;}).length + ' از ' + state.goalParts + '\n' +
+    'ریز درس‌ها:\n' + subjMinToText(subjMin);
+  var result = await callNotionSync(title, body);
+  statusEl.textContent = result.success ? 'با موفقیت به Notion اضافه شد ✓' : result.message;
+  btn.disabled = false;
+};
+
+document.getElementById('syncWeek').onclick = async function(){
+  var btn = this, statusEl = document.getElementById('syncWeekStatus');
+  btn.disabled = true; statusEl.textContent = 'در حال ارسال به Notion...';
+  var weekStart = getWeekStart();
+  var all = await getAllDayRecords();
+  var weekRecs = all.filter(function(r){ var dt = keyToDate(r.key); return dt>=weekStart && dt<=now; });
+  var agg = aggregate(weekRecs);
+  var h = Math.floor(agg.totalSec/3600), m = Math.floor((agg.totalSec%3600)/60);
+  var gStart = toJalali(weekStart.getFullYear(), weekStart.getMonth()+1, weekStart.getDate());
+  var label = faDigits(gStart[2])+' '+jMonths[gStart[1]-1]+' تا '+faDigits(jToday[2])+' '+jMonths[jToday[1]-1];
+  var title = 'خلاصه مطالعه هفتگی - ' + label;
+  var body = 'مجموع ساعت مطالعه هفته: ' + h + ' ساعت و ' + m + ' دقیقه\n' +
+    'تعداد روزهای ثبت‌شده: ' + weekRecs.length + ' از ۷\n' +
+    'ریز درس‌ها:\n' + subjMinToText(agg.subjMin);
+  var result = await callNotionSync(title, body);
+  statusEl.textContent = result.success ? 'با موفقیت به Notion اضافه شد ✓' : result.message;
+  btn.disabled = false;
+};
+
+document.getElementById('syncMonth').onclick = async function(){
+  var btn = this, statusEl = document.getElementById('syncMonthStatus');
+  btn.disabled = true; statusEl.textContent = 'در حال ارسال به Notion...';
+  var all = await getAllDayRecords();
+  var monthRecs = all.filter(function(r){ return r.key.indexOf(monthPrefix)===0; });
+  var agg = aggregate(monthRecs);
+  var h = Math.floor(agg.totalSec/3600), m = Math.floor((agg.totalSec%3600)/60);
+  var label = jMonths[jToday[1]-1] + ' ' + faDigits(jToday[0]);
+  var title = 'خلاصه مطالعه ماهانه - ' + label;
+  var body = 'مجموع ساعت مطالعه ماه: ' + h + ' ساعت و ' + m + ' دقیقه\n' +
+    'تعداد روزهای ثبت‌شده: ' + monthRecs.length + '\n' +
+    'ریز درس‌ها:\n' + subjMinToText(agg.subjMin);
+  var result = await callNotionSync(title, body);
+  statusEl.textContent = result.success ? 'با موفقیت به Notion اضافه شد ✓' : result.message;
+  btn.disabled = false;
+};
+
+document.getElementById('saveDisplayName').onclick = async function(){
+  var name = document.getElementById('displayName').value.trim();
+  await storageSet('displayName', name);
+  document.getElementById('appTitle').textContent = name || 'دفتر مطالعه';
+};
+
+document.getElementById('saveNotifSettings').onclick = async function(){
+  notifSettings = {
+    alarmEndPart: document.getElementById('alarmEndPart').checked,
+    alarmOvertime: document.getElementById('alarmOvertime').checked,
+    alarmBreakEnd: document.getElementById('alarmBreakEnd').checked,
+    calendarSync: document.getElementById('calendarSync').checked,
+    breakGoalMinutes: parseInt(document.getElementById('breakGoalMinutes').value,10) || 10
+  };
+  await storageSet('notifSettings', JSON.stringify(notifSettings));
+  document.getElementById('notifStatus').textContent = 'ذخیره شد ✓';
+};
+
+document.getElementById('saveClaudeConfig').onclick = async function(){
+  var key = document.getElementById('claudeApiKey').value.trim();
+  await storageSet('claudeApiKey', key);
+  document.getElementById('claudeSettingsStatus').textContent = key ? 'ذخیره شد ✓' : 'کلید پاک شد — تحلیل هوشمند غیرفعال است';
+};
+
+// ---------- تحلیل هوشمند هفته با Claude API (کاملاً اختیاری، فقط با کلید شخصی کاربر) ----------
+var claudeCallbacks = {};
+window.onClaudeApiResult = function(callId, success, text){
+  var cb = claudeCallbacks[callId];
+  if (cb) { cb(success, text); delete claudeCallbacks[callId]; }
+};
+function callClaudeApi(apiKey, prompt){
+  return new Promise(function(resolve){
+    var callId = 'ai' + Date.now() + Math.random().toString(36).slice(2);
+    claudeCallbacks[callId] = function(success, text){ resolve({success:success, text:text}); };
+    try { Bridge.callClaudeApi(apiKey, prompt, callId); }
+    catch(e){ resolve({success:false, text:'قابلیت تحلیل هوشمند در این نسخه اپ پیاده‌سازی نشده'}); }
+  });
+}
+document.getElementById('aiAnalyzeWeek').onclick = async function(){
+  var statusEl = document.getElementById('aiAnalyzeStatus');
+  var resultEl = document.getElementById('aiAnalyzeResult');
+  var keyRes = await storageGet('claudeApiKey');
+  var apiKey = (keyRes && keyRes.value) ? keyRes.value : '';
+  if (!apiKey){
+    statusEl.textContent = 'اول در تنظیمات، کلید Anthropic API رو وارد کن';
+    return;
+  }
+  statusEl.textContent = 'در حال تحلیل...';
+  resultEl.style.display = 'none';
+  var weekStart = getWeekStart();
+  var all = await getAllDayRecords();
+  var weekRecs = all.filter(function(r){ var dt = keyToDate(r.key); return dt>=weekStart && dt<=now; });
+  var agg = aggregate(weekRecs);
+  var h = Math.floor(agg.totalSec/3600), m = Math.floor((agg.totalSec%3600)/60);
+  var prompt = 'این خلاصه‌ی مطالعه‌ی هفتگی یک کارآموز وکالت است. به فارسی، کوتاه و کاربردی، ۲ یا ۳ پیشنهاد برای بهتر شدن برنامه‌ی هفته‌ی بعد بده:\n' +
+    'مجموع ساعت مطالعه: ' + h + ' ساعت و ' + m + ' دقیقه\n' +
+    'تعداد روزهای ثبت‌شده: ' + weekRecs.length + ' از ۷\n' +
+    'ریز درس‌ها:\n' + subjMinToText(agg.subjMin);
+  var result = await callClaudeApi(apiKey, prompt);
+  if (result.success){
+    resultEl.textContent = result.text;
+    resultEl.style.display = 'block';
+    statusEl.textContent = '';
+  } else {
+    statusEl.textContent = result.text;
+  }
+};
+
+document.getElementById('saveNotionConfig').onclick = function(){
+  var token = document.getElementById('notionToken').value.trim();
+  var parentId = document.getElementById('notionParentId').value.trim();
+  var statusEl = document.getElementById('settingsStatus');
+  try {
+    var ok = Bridge.setNotionConfig(token, parentId);
+    statusEl.textContent = ok ? 'تنظیمات ذخیره شد ✓' : 'ذخیره نشد';
+  } catch(e){ statusEl.textContent = 'خطا در ذخیره تنظیمات'; }
+};
+
+document.querySelectorAll('.tab').forEach(function(tab){
+  tab.onclick = function(){
+    document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+    tab.classList.add('active');
+    document.getElementById('todayView').style.display = 'none';
+    document.getElementById('weekView').style.display = 'none';
+    document.getElementById('monthView').style.display = 'none';
+    document.getElementById('settingsView').style.display = 'none';
+    if (tab.dataset.tab === 'today') document.getElementById('todayView').style.display = 'block';
+    else if (tab.dataset.tab === 'week') { document.getElementById('weekView').style.display = 'block'; renderWeek(); }
+    else if (tab.dataset.tab === 'month') { document.getElementById('monthView').style.display = 'block'; renderMonth(); }
+    else { document.getElementById('settingsView').style.display = 'block'; }
+  };
+});
+
+loadToday();
+</script>
+</body>
+</html>
